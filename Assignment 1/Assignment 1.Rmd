@@ -1,0 +1,63 @@
+---
+title: 'STAT847 Assignment 1'
+author: "Anh Pham - ewa589"
+date: 'September 2023'
+output:
+  html_document:
+    theme: united
+    toc: yes
+    toc_float: no
+    number_sections: yes
+    highlight: tango
+    fig_width: 10
+    fig_height: 8
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+    fig_height: 6
+    fig_width: 10
+    number_sections: yes
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1:
+
+```{r}
+data(Auto, package = "ISLR")
+```
+a. Produce a scatterplot matrix which includes all of the variables in the data set.
+```{r}
+pairs(Auto)
+```
+b. Compute the matrix of correlations between the variables using the function cor(). You will need to exclude the name variable, which is qualitative.
+```{r}
+cor(subset(Auto, select = -name))
+```
+c. Use the lm() function to perform a multiple linear regression with mpg as the response and all other variables except name as the predictors. Use the summary() function to print the results.
+```{r}
+lm.fit1 <-  lm(mpg ~ . - name, data = Auto)
+summary(lm.fit1)
+```
+Comment on the output. For instance:
+i. Is there a relationship between the predictors and the response?
+Yes, there is a relatioship between the predictors and the response by testing the null hypothesis of whether all the regression coefficients are zero. The F-statistic is far from 1 (with a small p-value), indicating evidence against the null hypothesis.
+
+ii. Which predictors appear to have a statistically significant relationship to the response?
+Looking at the p-values associated with each predictor’s t-statistic, we see that displacement, weight, year, and origin have a statistically significant relationship, while cylinders, horsepower, and acceleration do not.
+
+iii. What does the coefficient for the `year` variable suggest?
+The regression coefficient for year, 0.7507727, suggests that for every one year, mpg increases by the coefficient. In other words, cars become more fuel efficient every year by almost 1 mpg / year.
+
+d. Use the plot() function to produce diagnostic plots of the linear regression fit. Comment on any problems you see with the fit. Do the residual plots suggest any unusually large outliers? Does the leverage plot identify any observations with unusually high leverage?
+```{r}
+par(mfrow = c(2, 2))
+plot(lm.fit1)
+```
+hello ok
+
