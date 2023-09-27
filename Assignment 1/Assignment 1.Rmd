@@ -7,7 +7,7 @@ output:
     theme: united
     toc: yes
     toc_float: no
-    number_sections: yes
+    number_sections: no
     highlight: tango
     fig_width: 10
     fig_height: 8
@@ -17,7 +17,7 @@ output:
     toc: yes
     fig_height: 6
     fig_width: 10
-    number_sections: yes
+    number_sections: no
 editor_options:
   chunk_output_type: console
 ---
@@ -27,37 +27,89 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Question 1:
-
+This question involves the use of multiple linear regression on the Auto data set.
 ```{r}
 data(Auto, package = "ISLR")
 ```
-a. Produce a scatterplot matrix which includes all of the variables in the data set.
+(a) Produce a scatterplot matrix which includes all of the variables in the data set.
 ```{r}
 pairs(Auto)
 ```
-b. Compute the matrix of correlations between the variables using the function cor(). You will need to exclude the name variable, which is qualitative.
+(b) Compute the matrix of correlations between the variables using the function `cor()`. You will need to exclude the name variable, which is qualitative.
 ```{r}
 cor(subset(Auto, select = -name))
 ```
-c. Use the lm() function to perform a multiple linear regression with mpg as the response and all other variables except name as the predictors. Use the summary() function to print the results.
+(c) Use the `lm()` function to perform a multiple linear regression with mpg as the response and all other variables except name as the predictors. Use the `summary()` function to print the results.
 ```{r}
 lm.fit1 <-  lm(mpg ~ . - name, data = Auto)
 summary(lm.fit1)
 ```
 Comment on the output. For instance:
+
 i. Is there a relationship between the predictors and the response?
-Yes, there is a relatioship between the predictors and the response by testing the null hypothesis of whether all the regression coefficients are zero. The F-statistic is far from 1 (with a small p-value), indicating evidence against the null hypothesis.
+
+Yes, there is a relationship between the predictors and the response by testing the null hypothesis of whether all the regression coefficients are zero. The F-statistic is far from 1 (with a small p-value), indicating evidence against the null hypothesis.
 
 ii. Which predictors appear to have a statistically significant relationship to the response?
-Looking at the p-values associated with each predictor’s t-statistic, we see that displacement, weight, year, and origin have a statistically significant relationship, while cylinders, horsepower, and acceleration do not.
+
+Looking at the p-values associated with each predictor’s t-statistic, we see that `displacement`, `weight`, `year`, and `origin` have low p-values less than the assumed significance level of a = 0.05, which mean they have a statistically significant relationship to the response, while `cylinders`, `horsepower`, and `acceleration` do not.
 
 iii. What does the coefficient for the `year` variable suggest?
-The regression coefficient for year, 0.7507727, suggests that for every one year, mpg increases by the coefficient. In other words, cars become more fuel efficient every year by almost 1 mpg / year.
 
-d. Use the plot() function to produce diagnostic plots of the linear regression fit. Comment on any problems you see with the fit. Do the residual plots suggest any unusually large outliers? Does the leverage plot identify any observations with unusually high leverage?
+The regression coefficient for `year`, 0.7507727, suggests that for every unit increase of year, `mpg` increases by the coefficient assuming all other predictors are held constant. In other words, cars become more fuel efficient every year by 0.7507727 `mpg` per `year`.
+
+(d) Use the `plot()` function to produce diagnostic plots of the linear regression fit. Comment on any problems you see with the fit. Do the residual plots suggest any unusually large outliers? Does the leverage plot identify any observations with unusually high leverage?
 ```{r}
 par(mfrow = c(2, 2))
 plot(lm.fit1)
 ```
+Seems to be non-linear pattern, linear model not the best fit. From the leverage plot, point 14 appears to have high leverage, although not a high magnitude residual.
+```{r}
+plot(predict(lm.fit1), rstudent(lm.fit1))
+```
+There are possible outliers as seen in the plot of studentized residuals because there are data with a value greater than 3.
 
+(e) Use the `*` and `:` symbols to fit linear regression models with interaction effects. Do any interactions appear to be statistically significant?
+```{r}
+lm.fit2 <- lm(mpg~.*., Auto[,-9])
+summary(lm.fit2)
+```
+For those whose p-values less than the assumed significance level of a = 0.05, `acceleration:origin` appear to be statistically significant
+
+(f) (1 mark) Try a few different transformations of the variables, such as $log(X)$,$\sqrt{X}$, $X^2$. Comment on your findings.
+```{r}
+lm.fit3 = lm(mpg~.+I(cylinders^2) +  I(displacement^2) + I(horsepower^2) + I(weight^2) + I(acceleration^2) + I(year^2), Auto[,-9])
+summary(lm.fit3)
+```
+```{r}
+lm.fit4 = lm(mpg~.+log(cylinders) +  log(displacement) + log(horsepower) + I(log(weight)) + I(log(acceleration)) + I(log(year)), Auto[,-9])
+summary(lm.fit4)
+```
+```{r}
+anova(lm.fit1,lm.fit4)
+```
+# Question 2
+In this problem we will investigate the t-statistic for the null hypothesis $H_0$ : $\beta$ = 0 in simple linear regression without an intercept. To begin, we generate a predictor x and a response y as follows.
+```{r}
+set.seed (1)
+x=rnorm (100)
+y=2*x+rnorm (100)
+```
+(a) Perform a simple linear regression of y onto x, without an intercept. Report the coefficient estimate $\hat\beta$, the standard error of this coefficient estimate, and the t-statistic and p-value associated with the null hypothesis $H_0$ : $\beta$ = 0. Comment on these results. (You can perform regression without an intercept using the command `lm(y ∼ x + 0)`.)
+```{r}
+fit4 <- lm(y ~ x + 0)
+summary(fit4)
+```
+According to the summary above, we have a value of 1.9939 for $\hat\beta$, a value of 0.1065 for the `standard error`, a value of 18.73 for the `t-statistic` and a value less than $2e^{-16}$ for the `p-value`. The small `p-value` allows us to reject $H_0$.
+
+(b) Now perform a simple linear regression of x onto y without an intercept, and report the coefficient estimate, its standard error, and the corresponding t-statistic and p-values associated with the null hypothesis $H_0$ : $\beta$ = 0. Comment on these results.
+```{r}
+fit5 <- lm(x ~ y + 0)
+summary(fit5)
+```
+According to the summary above, we have a value of 0.39111 for $\hat\beta$, a value of 0.02089 for the `standard error`, a value of 18.73 for the `t-statistic` and a value less than $2e^{-16}$ for the `p-value`. The small `p-value` allows us to reject $H_0$.
+
+(c) What is the relationship between the results obtained in (a) and (b)?
+
+We obtain the same value for the t-statistic and consequently the same value for the corresponding p-value. Both results in (a) and (b) reflect the same line created in (a). In other words, y=2x+ε could also be written x=0.5(y−ε).
 
