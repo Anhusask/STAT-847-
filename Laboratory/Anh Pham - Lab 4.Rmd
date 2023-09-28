@@ -1,0 +1,74 @@
+---
+title: 'STAT847 Lab 4'
+author: "Anh Pham - ewa589"
+date: 'September 28, 2023'
+output:
+  pdf_document:
+    toc: yes
+    fig_height: 6
+    fig_width: 10
+    number_sections: no
+  word_document:
+    toc: yes
+  html_document:
+    theme: united
+    toc: yes
+    toc_float: no
+    number_sections: no
+    highlight: tango
+    fig_width: 10
+    fig_height: 8
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+Load the `mtcars.csv` file into an object names "mtcars.data". You can use `?mtcars` to get more information on the data set
+```{r}
+mtcars.data <-read.csv('D:mtcars.csv')
+head(mtcars.data)
+?mtcars
+```
+# Question 2
+Fit a logistic regression model to predict `am`(transmission) using `mpg`, `disp`, `hp`, and `wt`. 
+```{r}
+myfit <- glm(am ~ mpg + disp + hp + wt, data = mtcars.data,
+family = "binomial")
+summary(myfit)
+```
+Print out the model coefficients
+```{r}
+coef(myfit)
+```
+# Question 3
+Use the `predict()` function to get the fitted probabilities. Then convert the probabilities to 1 or 0 using the threshold of 0.5.  For example, if the fitted probability is greater than 0.5, it would equate to a 1 values, if the fitted probability is less than or equal to 0.5 it equates to a 0 value.
+
+First, we get the fitted probability
+```{r}
+glm.probs=predict(myfit, type="response")
+head(glm.probs)
+```
+Now we convert the probilities to 1 or 0 using the threshold of 0.5
+```{r}
+glm.pred<- ifelse(glm.probs > 0.5,1,0)
+head(glm.pred)
+```
+# Question 4
+Create a confusion matrix to assess the accuracy of the fitted logistic model
+
+Create a confusion matrix
+```{r}
+table(glm.pred, mtcars.data$am)
+```
+True classification rate
+```{r}
+mean(glm.pred==mtcars.data$am)
+```
+mis-classification rate
+```{r}
+mean(glm.pred!=mtcars.data$am)
+```

@@ -115,6 +115,3 @@ summary(lm.fit7)
 According to the summary above, we have a value of 0.39111 for $\hat\beta$, a value of 0.02089 for the `standard error`, a value of 18.73 for the `t-statistic` and a value less than $2e^{-16}$ for the `p-value`. The small `p-value` allows us to reject $H_0$.
 
 (c) What is the relationship between the results obtained in (a) and (b)?
-
-We obtain the same value for the t-statistic and consequently the same value for the corresponding p-value. Both results in (a) and (b) reflect the same line created in (a). In other words, y=2x+ $\epsilon$ could also be written x=0.5(y−$\epsilon$).
-
