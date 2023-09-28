@@ -26,7 +26,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Question 1:
+# Question 1
 This question involves the use of multiple linear regression on the Auto data set.
 ```{r}
 data(Auto, package = "ISLR")
@@ -115,3 +115,98 @@ summary(lm.fit7)
 According to the summary above, we have a value of 0.39111 for $\hat\beta$, a value of 0.02089 for the `standard error`, a value of 18.73 for the `t-statistic` and a value less than $2e^{-16}$ for the `p-value`. The small `p-value` allows us to reject $H_0$.
 
 (c) What is the relationship between the results obtained in (a) and (b)?
+We obtain the same value for the t-statistic and consequently the same value for the corresponding p-value. Both results in (a) and (b) reflect the same line created in (a). In other words, y=2x+$\epsilon$ could also be written x=0.5(y−$\epsilon$).
+
+(d) For the regression of $Y$ onto $X$ without an intercept, the `t statistic` for $H_0: \beta=0$ takes the form $\hat{\beta}/SE(\hat{\beta})$, where $\hat{\beta}$ is given by
+$$
+\hat{\beta}=\left(\sum_{i=1}^{n} x_{i} y_{i}\right) /\left(\sum_{i^{\prime}=1}^{n} x_{i^{\prime}}^2\right) (2)
+$$
+
+$$SE(\hat{\beta})=\sqrt{\frac{\sum_{i=1}^{n}\left(y_{i}-x_{i} \hat{\beta}\right)^2}{(n-1) \left(\sum_{i^{\prime}=1}^{n} x_{i^{\prime}}^2\right)}} (3)$$ 
+
+Show algebraically, and confirm numerically in R, that the t-statistic can be written as
+$$
+\frac{(\sqrt{n-1}) \sum_{i=1}^{n} x_{i} y_{i}}{\sqrt{\left(\sum_{i=1}^{n} x_{i}^2\right)\left(\sum_{i^{\prime}=1}^{n} y_{i^{\prime}}^2\right)-\left(\sum_{i^{\prime}=1}^{n} x_{i^{\prime}} y_{i^{\prime}}\right)^2}} 
+$$
+First, we note that
+
+$$
+    \frac{1}{\text{SE}(\hat{\beta})} = 
+    \sqrt{\frac{(n - 1)\sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2}{\sum_{i = 1}^n \left( y_i - x_i\hat{\beta} \right)^2}} =
+    \frac{\sqrt{(n - 1)} \sqrt{\sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2}}{\sqrt{\sum_{i = 1}^n \left( y_i - x_i\hat{\beta} \right)^2}}.
+$$
+
+Thus, when we combine with $\hat{\beta}$ to compute the t-statistic, we get
+
+$$
+    t = \frac{\hat{\beta}}{\text{SE}(\hat{\beta})} = 
+    \frac{\sqrt{(n - 1)} \sqrt{\sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2} \left( \sum_{i = 1}^n x_iy_i \right)}
+    {\left( \sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2 \right) \sqrt{\sum_{i = 1}^n \left( y_i - x_i\hat{\beta} \right)^2}}.
+$$
+Note that we can do some cancelling with the $\sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2$ that shows up in both the numerator and the denominator. Additionally, $i$ and $i^{\prime}$ are the same in this case, we can rewrite the t-statistic as:
+
+$$
+    t = \frac{\sqrt{(n - 1)} \sum_{i = 1}^n x_iy_i}
+    {\sqrt{\sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2} \sqrt{\sum_{i^{\prime} = 1}^n \left( y_{i^{\prime}} - x_{i^{\prime}}\hat{\beta} \right)^2}}
+$$
+
+Next, we can combine the two square roots in the denominator and focus there. To start off, we we note that
+
+$$
+    \sum_{i^{\prime} = 1}^n \left( y_{i^{\prime}} - x_{i^{\prime}}\hat{\beta} \right)^2 = 
+    \sum_{i^{\prime} = 1}^n \left( y_{i^{\prime}}^2 - 2x_{i^{\prime}}y_{i^{\prime}}\hat{\beta} + x_{i^{\prime}}^2\hat{\beta}^2 \right) = 
+    \sum_{i^{\prime} = 1}^n y_{i^{\prime}}^2 - 2\hat{\beta}\sum_{i^{\prime} = 1}^n x_{i^{\prime}}y_{i^{\prime}} + \hat{\beta}^2\sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2.
+$$
+
+Plugging in the formula for $\hat{\beta}$, this then becomes
+
+$$
+    \sum_{i^{\prime} = 1}^n y_{i^{\prime}}^2 - 2\frac{\left( \sum_{i^{\prime} = 1}^n x_{i^{\prime}}y_{i^{\prime}} \right)^2}{\sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2}
+    + \frac{\left( \sum_{i^{\prime} = 1}^n x_{i^{\prime}}y_{i^{\prime}} \right)^2}{\sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2} = 
+    \sum_{i^{\prime} = 1}^n y_{i^{\prime}}^2 - \frac{\left( \sum_{i^{\prime} = 1}^n x_jy_{i^{\prime}} \right)^2}{\sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2}.
+$$
+
+Multiplying this by $\sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2$ gives us
+
+$$
+    \left( \sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2 \right) \left( \sum_{i^{\prime} = 1}^n y_{i^{\prime}}^2 \right) - \left( \sum_{i^{\prime} = 1}^n x_{i^{\prime}}y_{i^{\prime}} \right)^2.
+$$
+
+This completes the simplification of the denominator, giving us the desired formula for the `t-statistic` for $H_0: \beta = 0$.
+
+$$
+    t = \frac{\left( \sqrt{n-1} \right) \sum_{i = 1}^n x_iy_i}
+    {\sqrt{\left( \sum_{i^{\prime} = 1}^n x_{i^{\prime}}^2 \right) \left( \sum_{i^{\prime} = 1}^n y_{i^{\prime}}^2 \right) - \left( \sum_{i^{\prime} = 1}^n x_{i^{\prime}}y_{i^{\prime}} \right)^2}}
+$$
+By numerically in R, we can confirm that the above equation is true
+```{r}
+sum.xy = sum(x * y)
+sum.x2 = sum(x**2)
+sum.y2 = sum(y**2)
+(sqrt(length(x) - 1)*sum.xy)/sqrt(sum.x2*sum.y2 - sum.xy**2)
+```
+This value of t equals to the `t-value` of the fitted model created in (a)
+```{r}
+summary(lm.fit6)$coefficients[, "t value"]
+```
+(e) Using the results from (d), argue that the t-statistic for the regression of $y$ onto $x$ is the same as the t-statistic for the regression of $x$ onto $y$.
+
+The expression of `t statistic` found in (d) is symetric for $x$ and $y$. Thus, when performing regression of $x$ onto $y$, the variables $x$ and $y$ will just replace each other, and the value is not change. This explains why we have the same `t statistic` value in (a) and (b).
+
+(f) In R, show that when regression is performed with an intercept, the t-statistic for $H_0: \beta=0$ is the same for the regression of $y$ onto $x$ as it is for the regression of $x$ onto $y$.
+
+The regression of $y$ onto $x$ with an intercept
+```{r}
+lm.fit8 <- lm(y ~ x)
+summary(lm.fit8)
+```
+The regression of $x$ onto $y$ with an intercept
+```{r}
+lm.fit9 <- lm(x ~ y)
+summary(lm.fit9)
+```
+The below results show that `t statistic` values in both regressions are equal
+```{r}
+summary(lm.fit8)$coefficients[, "t value"]
+summary(lm.fit9)$coefficients[, "t value"]
+```
