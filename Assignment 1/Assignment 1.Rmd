@@ -210,3 +210,137 @@ The below results show that `t statistic` values in both regressions are equal
 summary(lm.fit8)$coefficients[, "t value"]
 summary(lm.fit9)$coefficients[, "t value"]
 ```
+# Question 3
+In this exercise you will create some simulated data and will fit simple linear regression models to it. Make sure to use set.seed(1) prior to starting part (a) to ensure consistent results.
+```{r}
+set.seed(1)
+```
+(a) Using the `rnorm()` function, create a vector, $x$, containing 100 observations drawn from a $N(0,1)$ distribution. This represents a feature, $X$.
+```{r}
+x = rnorm(100, mean = 0, sd = 1)
+```
+Note that the conventional notation for a normal distribution with mean $\mu$ and standard deviation $\sigma$ is N($\mu$,$\sigma^2$). In R, the `rnorm()` function takes the arguments n, mean, and sd, where n is the number of observations to be generated, mean is the mean $\mu$ for the normal distribution, and sd is the standard deviation $\sigma$ for the normal distribution. Thus, to generate 100 observations from an N($\mu$=0,$\sigma^2$=0.25) distribution, we need to use the syntax rnorm(100, mean = 0, sd = 0.5).
+```{r}
+eps = rnorm(100, mean = 0, sd = 0.5)
+```
+(c) Using $x$ and $\epsilon$, generate a vector $y$ according to the model
+$$
+Y=-1+0.5 X+\epsilon
+$$
+```{r}
+y = -1 + 0.5*x + eps
+```
+What is the length of the vector $y$ ? 
+```{r}
+length(y)
+```
+What are the values of $\beta_{0}$ and $\beta_{1}$ in this linear model?
+
+In this model, $\beta_{0} = -1$ and $\beta_{1} = 0.5$.
+
+d) Create a scatterplot displaying the relationship between $x$ and $y$. Comment on what you observe.
+```{r}
+plot(x, y, main = "Plot for original data (variance = .25)")
+```
+While there is definitely a positive linear relationship between x and y, there is some noise from the introduction of the error term.
+
+e) Fit a least squares linear model to predict $y$ using $x$. Comment on the model obtained. How do $\hat{\beta}_{0}$ and $\hat{\beta}_{1}$ compare to $\beta_{0}$ and $\beta_{1}$ ?
+```{r}
+lm.fit10 <- lm(y~x)
+summary(lm.fit10)
+```
+The least squares regression model to predict $y$ using $x$ has the form $\hat{Y}=-1.01885+0.49947 X$, which is quite close to the true relationship $Y=-1+0.5X+\epsilon$. The `p-values` of essentially zero for $\beta_0$ and $\beta_1$ provide strong evidence to reject the null hypotheses $H_0: \beta_j=0$ for $j=1,2$. We also note, however, that $R^2=0.4674$, which means that the linear regression model explains less than half of the variation in $Y$ found in the data. Lastly, the residual standard error is 0.4814.
+
+(f) Display the least squares line on the scatterplot obtained in (d). Draw the population regression line on the plot, in a different color. Use the legend() command to create an appropriate legend.
+
+```{r}
+plot(x, y, main = "Plot for original data (variance = .25)")
+abline(lm.fit10, lwd = 2, lty = 2, col = "red")
+abline(a = -1, b = 0.5, lwd = 2, lty = 4, col = "blue")
+legend(-2.25, 0.4, legend = c("Least squares regression", "Population regression"), col = c("red", "blue"), 
+       lty = c(2, 4), lwd = 2, cex = 0.8)
+```
+
+(g) Now fit a polynomial regression model that predicts $y$ using $x$ and $x^{2}$. Is there evidence that the quadratic term improves the model fit? Explain your answer.
+```{r}
+lm.fit11 = lm(y ~ x + I(x^2))
+summary(lm.fit11)
+```
+While the polynomial regression model that predicts $Y$ using $X$ and $X^2$ has a slightly lower residual standard error value (0.479 vs. 0.481) and slightly higher $R^2$ value (0.4779 vs. 0.4674) compared to the linear model using just  $X$, the `p-value` for the coefficient of $X^2$ is 0.164. This means that even though the inclusion of the quadratic term slightly improved the model fit in this situation, there isn't sufficient evidence to reject the null hypothesis $H_0:\beta_2 = 0$. Thus, the improved model fit is likely a result of fitting more closely to the noise in the data from the presence of $\epsilon$ in the true relationship.
+
+(h) Repeat (a)-(f) after modifying the data generation process in such a way that there is less noise in the data. The model in (c) should remain the same. You can do this by decreasing the variance of the normal distribution used to generate the error term $\epsilon$ in (b). Describe your results.
+
+Repeat (a)-(c) with decreased $\epsilon$
+```{r}
+set.seed(1)
+x = rnorm(100, mean = 0, sd = 1)
+eps.less.noise = rnorm(100, mean = 0, sd = 0.25)
+y.less.noise = -1 + 0.5*x + eps.less.noise
+```
+Repeat (d) to plot data with less noise
+```{r}
+plot(x, y.less.noise, main = "Plot for data with less noise (variance = .0625)")
+```
+Compared to the plot from (d), there is clearly less noise in the data. This results in the points being more tightly clustered around the line $Y=-1+0.5 X+\epsilon$
+
+Repeat (e) to fit a linear model y onto x
+```{r}
+lm.fit.less.noise = lm(y.less.noise ~ x)
+summary(lm.fit.less.noise)
+```
+Repeat (f) to display the new least square line
+```{r}
+plot(x, y.less.noise, main = "Plot for data with less noise (variance = .0625)")
+abline(lm.fit.less.noise, lwd = 2, lty = 2, col = "red")
+abline(a = -1, b = 0.5, lwd = 2, lty = 4, col = "blue")
+legend(-2.25, 0.4, legend = c("Least squares regression", "Population regression"), col = c("red", "blue"), 
+       lty = c(2, 4), lwd = 2, cex = 0.8)
+```
+Describe the result
+
+The least squares regression model to predict $y$ using $x$ has the form  $\hat{Y}$=−0.99316+0.50529X, which is again is quite close to the true relationship  $Y=−1+0.5X+\epsilon$. The `p-values` of essentially zero for $\beta_0$ and $\beta_1$ provide strong evidence to reject the null hypotheses $H_0:\beta_j=0$ for j=1,2. We also note, that now $R^2=0.755$, which means that the linear regression model explains about 75% of the variation in Y found in the less noisy data. This is a big improvement from the  $R^2$ value of 0.4674 when using the original, noisier Y. In addition, the residual standard error value of 0.2598 is also an improvement over the value of 0.4814 from the original data.
+
+(i) Repeat (a)-(f) after modifying the data generation process in such a way that there is more noise in the data. The model in (c) should remain the same. You can do this by increasing the variance of the normal distribution used to generate the error term $\epsilon$ in (b). Describe your results.
+
+Repeat (a)-(c) with increased $\epsilon$
+```{r}
+set.seed(1)
+x = rnorm(100, mean = 0, sd = 1)
+eps.more.noise = rnorm(100, mean = 0, sd = 1)
+y.more.noise = -1 + 0.5*x + eps.more.noise
+```
+Repeat (d) to plot data with less noise
+```{r}
+plot(x, y.more.noise, main = "Plot for data with less noise (variance = 1)")
+```
+Compared to the plot from (d), there is clearly more noise in the data. This results in the points being being very spread out from the line $Y=-1+0.5 X+\epsilon$
+
+Repeat (e) to fit a linear model y onto x
+```{r}
+lm.fit.more.noise = lm(y.more.noise ~ x)
+summary(lm.fit.more.noise)
+```
+Repeat (f) to display the new least square line
+```{r}
+plot(x, y.more.noise, main = "Plot for data with less noise (variance = .0625)")
+abline(lm.fit.less.noise, lwd = 2, lty = 2, col = "red")
+abline(a = -1, b = 0.5, lwd = 2, lty = 4, col = "blue")
+legend(-2.25, 0.4, legend = c("Least squares regression", "Population regression"), col = c("red", "blue"), 
+       lty = c(2, 4), lwd = 2, cex = 0.8)
+```
+Describe the result
+
+The least squares regression model to predict $y$ using $x$ has the form  $\hat{Y}$=−0.99316+0.50529X, which is again is quite close to the true relationship  $Y=−1+0.5X+\epsilon$. The `p-values` of essentially zero for $\beta_0$ and $\beta_1$ provide strong evidence to reject the null hypotheses $H_0:\beta_j=0$ for j=1,2. We also note, that now $R^2=0.755$, which means that the linear regression model explains about 75% of the variation in Y found in the less noisy data. This is a big improvement from the  $R^2$ value of 0.4674 when using the original, noisier Y. In addition, the residual standard error value of 0.2598 is also an improvement over the value of 0.4814 from the original data.
+
+(j) What are the confidence intervals for $\beta_{0}$ and $\beta_{1}$ based on the original data set, the noisier data set, and the less noisy data set? Comment on your results. 
+```{r}
+confint(lm.fit10)
+```
+```{r}
+confint(lm.fit.less.noise)
+```
+
+```{r}
+confint(lm.fit.more.noise)
+```
+As we go from less noise from more noise, the confidence intervals for $\beta_0$ and $\beta_1$ become wider and wider.
