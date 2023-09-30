@@ -332,15 +332,77 @@ Describe the result
 
 The least squares regression model to predict $y$ using $x$ has the form  $\hat{Y}$=−0.99316+0.50529X, which is again is quite close to the true relationship  $Y=−1+0.5X+\epsilon$. The `p-values` of essentially zero for $\beta_0$ and $\beta_1$ provide strong evidence to reject the null hypotheses $H_0:\beta_j=0$ for j=1,2. We also note, that now $R^2=0.755$, which means that the linear regression model explains about 75% of the variation in Y found in the less noisy data. This is a big improvement from the  $R^2$ value of 0.4674 when using the original, noisier Y. In addition, the residual standard error value of 0.2598 is also an improvement over the value of 0.4814 from the original data.
 
-(j) What are the confidence intervals for $\beta_{0}$ and $\beta_{1}$ based on the original data set, the noisier data set, and the less noisy data set? Comment on your results. 
+(j) What are the confidence intervals for $\beta_{0}$ and $\beta_{1}$ based on the original data set, the noisier data set, and the less noisy data set? Comment on your results.
+The original data set
 ```{r}
 confint(lm.fit10)
 ```
+The less noisy data set
 ```{r}
 confint(lm.fit.less.noise)
 ```
-
+The noisier data set
 ```{r}
 confint(lm.fit.more.noise)
 ```
 As we go from less noise from more noise, the confidence intervals for $\beta_0$ and $\beta_1$ become wider and wider.
+
+Question 4: (8 marks) I collect a set of data ($n=100$ observations) containing a single predictor and a quantitative response. I then fit a linear regression model to the data, as well as a separate cubic regression, i.e. $Y=\beta_{0}+\beta_{1} X+\beta_{2} X_{2}+\beta_{3} X^{3}+\epsilon$
+
+(a) Suppose that the true relationship between $X$ and $Y$ is linear,i.e. $Y=\beta_{0}+\beta_{1} X+\epsilon$. Consider the training residual sum of squares (RSS) for the linear regression, and also the training RSS for the cubic regression. Would we expect one to be lower than the other, would we expect them to be the same, or is there not enough information to tell? Justify your answer.
+
+I would expect the polynomial regression to have a lower training RSS than the linear regression because it could make a tighter fit against data that matched with a wider irreducible error.
+
+(b) Answer (a) using test rather than training RSS.
+
+Converse to (a), I would expect the polynomial regression to have a higher test
+RSS as the overfit from training would have more error than the linear regression.
+
+
+(c) Suppose that the true relationship between $X$ and $Y$ is not linear, but we don't know how far it is from linear. Consider the training RSS for the linear regression, and also the training RSS for the cubic regression. Would we expect one to be lower than the other, would we expect them to be the same, or is there not enough information to tell? Justify your answer.
+
+Polynomial regression has lower training RSS than the linear fit because of its
+higher flexibility: no matter what the underlying true relationship is the more flexible model will more closely follow points and reduce the training RSS.
+
+(d) Answer (c) using test rather than training RSS.
+
+There is not enough information to tell which test RSS would be lower for either
+regression, as we do not know “how far it is from linear”. If it is closer to linear than cubic, the linear regression test RSS could be lower than the cubic regression test RSS. Or, if it is closer to cubic than linear, the cubic regression test RSS could be lower than the linear regression test RSS. This is due to bias-variance tradeoff: it is not clear what level of flexibility will fit this data better.
+
+Question 5: (10 marks) Consider the fitted values that result from performing linear regression without an intercept. In this setting, the $i$ th fitted value takes the form
+
+$$
+\hat{y}_{i}=x_{i} \hat{\beta}\;(4),
+$$
+
+where
+
+$$
+\hat{\beta}=\left(\sum_{i=1}^{n} x_{i} y_{i}\right) /\left(\sum_{i^{\prime}=1}^{n} x_{i^{\prime}}^{2}\right)\; (5)
+$$
+
+Show that we can write
+
+$$
+\hat{y}_{i}=\left(\sum_{i^{\prime}=1}^{n} a_{i^{\prime}} y_{i^{\prime}}\right)
+$$
+
+What is $a_{i^{\prime}}$ ?
+
+Note: We interpret this result by saying that the fitted values from linear regression are linear combinations of the response values.
+
+By substituting equation (5) into (4), we have:
+$$
+\begin{aligned}
+\hat{y}_{i}&=x_{i}\hat{\beta}\\
+& = x_i\frac{\sum_{i^{\prime}=1}^{n} x_{i^{\prime}} y_{i^{\prime}}} {\sum_{j=1}^{n} x_{j}^{2}}\\
+& = \frac{\sum_{i^{\prime}=1}^{n}x_i x_{i^{\prime}}y_{i^{\prime}}}{\sum_{j=1}^{n}x_{j}^{2}}\\
+& = \sum_{i^{\prime}=1}^{n}\frac{x_i x_{i^{\prime}}}{\sum_{j=1}^{n}x_{j}^{2}}y_{i^{\prime}}
+\end{aligned}
+$$
+(Note: We've changed the indices used in the formula for $\hat{\beta}$ from $i$ and $i^{\prime}$ to $i^{\prime}$ and $j$ respectively to distinguish them from the $i$ in the $\hat{y}_i$ formula.)
+
+So, compare with the formula of $\hat{y}$: $\hat{y}_{i}=\left(\sum_{i^{\prime}=1}^{n} a_{i^{\prime}} y_{i^{\prime}}\right)$, the value of $a_{i^{\prime}}$ is: 
+$$
+a_{i^{\prime}} = \sum_{i^{\prime}=1}^{n}\frac{x_i x_{i^{\prime}}}{\sum_{j=1}^{n}x_{j}^{2}}
+$$
