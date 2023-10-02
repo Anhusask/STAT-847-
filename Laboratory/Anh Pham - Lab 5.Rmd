@@ -1,0 +1,49 @@
+---
+title: 'STAT847 Lab 5'
+author: "Anh Pham - ewa589"
+date: 'October 5, 2023'
+output:
+  html_document:
+    theme: united
+    toc: yes
+    toc_float: no
+    number_sections: no
+    highlight: tango
+    fig_width: 10
+    fig_height: 8
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+    fig_height: 6
+    fig_width: 10
+    number_sections: no
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+1) Load in the "agpop.csv" file to an object called 'ag.data'
+```{r}
+ag.data <- read.csv('D:agpop-1.csv')
+head(ag.data)
+```
+2) Use the `summary()` function to print out one summary of `acres92` and `acres87`
+```{r}
+summary(ag.data[c('acres92','acres87')])
+```
+3) Print out a histogram of `acres92` using the base R `hist()` function.  Change the title of the histogram to "Histogram of Total Acres in 1992". Change the x-axis label to "Acres in 1992"
+```{r}
+hist(ag.data$acres92, main = "Histogram of Total Acres in 1992", xlab = "Acres in 1992")
+```
+4) Use the `sample()` function to create sampling indexes that split the 'ag.data' into 80% for training and 20% for testing. Then use these sample indexes to split the 'ag.data' into training and testing datasets called "train.data" and "test.data".
+```{r}
+set.seed(1)
+dt= sort(sample(nrow(ag.data), nrow(ag.data)*.8))
+train.data <- ag.data[dt,]
+test.data <- ag.data[-dt,]
+dim(train.data)
+dim(test.data)
+```
